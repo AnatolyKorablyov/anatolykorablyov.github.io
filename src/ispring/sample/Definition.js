@@ -1,6 +1,7 @@
 goog.provide("ispring.sample.Definition");
 
-goog.scope(function() {
+goog.scope(function() 
+{
 
     Point = goog.defineClass(null, {
         constructor: function (x, y) {
@@ -15,6 +16,17 @@ goog.scope(function() {
             this._width = width;
         }
     });
+    
+    const CANVAS_SIZE = new Size(400, 400);
+    const BIRD_POSITION = new Point(100, 200);
+    const BIRD_SIZE = new Size(50, 50);
+    const BIRD_FILE_NAME = "bird.png";
+    const PATH_TO_IMAGES = "src/images/";
+    const BIRD_FLY_NUMBER = -10;
+    const PIPE_FILE_NAME = "pipe.png";
+    const PIPE_SPEED = 5;
+    const PIPES_DISTANCE = 200;
+    const PIPE_POS_X = 400;
 
     const FONT_COLOR = "#00F";
     const COLORS = ["#F00", "#0F0", "#00F", "#FF0"];
@@ -38,6 +50,17 @@ goog.scope(function() {
      */
     ispring.sample.Definition = goog.defineClass(null, {
         constructor: function() {
+            this._CANVAS_SIZE = CANVAS_SIZE;
+            this._BIRD_POSITION = BIRD_POSITION;
+            this._BIRD_SIZE = BIRD_SIZE;
+            this._BIRD_FILE_NAME = BIRD_FILE_NAME;
+            this._PATH_TO_IMAGES = PATH_TO_IMAGES;
+            this._BIRD_FLY_NUMBER = BIRD_FLY_NUMBER;
+            this._PIPE_FILE_NAME = PIPE_FILE_NAME;
+            this._PIPE_SPEED = PIPE_SPEED;
+            this._PIPES_DISTANCE = PIPES_DISTANCE;
+            this._PIPE_POS_X = PIPE_POS_X;
+            
             this._size = Size(0, 0);
             this._FONT_COLOR = FONT_COLOR;
             this._COLORS = COLORS;
@@ -54,6 +77,10 @@ goog.scope(function() {
             this._ADD_SPEED = ADD_SPEED;
             this._TOP_RESULT = TOP_RESULT;
             this._POINTS_FOR_SPEED = POINTS_FOR_SPEED;
+        },
+        GetRandomArbitary: function(min, max)
+        {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
     });
 });

@@ -1,6 +1,7 @@
 goog.provide("ispring.sample.GameController");
 
 goog.require("ispring.sample.GameModel");
+
 goog.require("ispring.sample.GameView");
 
 goog.scope(function() {
@@ -11,119 +12,76 @@ goog.scope(function() {
     /**
      * @constructor
      */
-    ispring.sample.GameController = goog.defineClass(null, 
-        {
+    ispring.sample.GameController = goog.defineClass(null, {
         constructor: function(canvas) 
-        {
+        {            
             this._model = new MODEL();
             this._view = new VIEW(canvas);
             
             const thisPtr = this;
+            window.addEventListener('keypress', thisPtr.HandlerKeyPress);
             canvas.onmouseup = function()
             {
-                thisPtr.OnMouseClick();
+                thisPtr._model.FlyBird();
             };
+
+            //this._view.DrawShapes(this._model.GetBirdImage(), this._model.GetBirdPosition());
             setInterval(function()
             {
-                thisPtr._model.RotateSystem();
-                thisPtr._view.DrawShapes(thisPtr._model.GetShapesWithArrow());
-                thisPtr._view.DrawText(thisPtr._model.GetScore(), thisPtr._model.GetSpeed(), thisPtr._model.GetTop());
+                thisPtr.GameInMotion();
             }, 1000 / 30);
-
         },
-        CheckColors: function()
+        HandlerKeyPress: function(e)
         {
-            var shapes = this._model.GetShapes();
-            var arrow = this._model.GetArrow();
-            var rotate = this._model.GetRotate();
-
-            function CompareShapes(shapeArray, arrowShape, rangeNumber)
+            console.log("key pressed: ", e.keyCode);
+            if (e.keyCode == 32)
             {
-                var sectorRadian = config._TWO_HALVES / config._NUMBER_OF_COLORS * Math.PI;
-
-                for (var i = 0; i < shapeArray.length; ++i)
-                {
-                    var startRot = shapeArray[i].GetStartRotation();
-                    if (startRot < rangeNumber && rangeNumber < sectorRadian * (i + 1) &&
-                        shapeArray[i].GetColor() == arrowShape.GetColor())
-                    {
-                        return true;
-                    }
-                }
-                return false;
+                this._model.FlyBird();
             }
-            var turn = rotate / (config._TWO_HALVES * Math.PI);
-            turn = turn % 1;
-            turn = turn * 2 * Math.PI;
-            if (turn < 0)
+        },
+        GameInMotion: function ()
+        {
+            this._model.FallBird();
+            this._model.MovePipe();
+            this.HandlerPipes();
+            this._view.ClearCanvas();
+            this._view.DrawShapes(this._model.GetBirdImage(), this._model.GetBirdPosition(), this._model.GetBirdSize());
+            for (var i = 0; i < this._model.GetPipeArrayLength(); ++i)
             {
-                turn = Math.abs(turn);
-                if (turn > 3 * Math.PI / 2 && turn < 2 * Math.PI)
-                {
-                    return (CompareShapes(shapes, arrow, turn - 3 * Math.PI / 2));
-                }
-                else if (turn > 0 && turn < Math.PI / 2)
-                {
-                    return (CompareShapes(shapes, arrow, turn + Math.PI / 2));
-                }
-                else if (turn > Math.PI && turn < 3 * Math.PI / 2)
-                {
-                    return (CompareShapes(shapes, arrow, turn + Math.PI / 2));
-                }
-                else
-                {
-                    return (CompareShapes(shapes, arrow, turn + Math.PI / 2));
-                }
+                this._view.DrawShapes(this._model.GetPipeImage(i), this._model.GetPipePosition(i)[0], this._model.GetPipeSize(i)[0]);
+                this._view.DrawShapes(this._model.GetPipeImage(i), this._model.GetPipePosition(i)[1], this._model.GetPipeSize(i)[1]);
             }
-            else
+        },
+        CheckCollision: function(posA, sizeA, posB, sizeB)
+        {
+            if (posA._x + sizeA._height >= posB._x && posA._x <= posB._x + sizeB._height)
             {
-                if (turn > 3 * Math.PI / 2 && turn < 2 * Math.PI)
+                if (posA._y >= posB._y && posA._y + sizeA._width <= posB._y + sizeB._width)
                 {
-                    return (CompareShapes(shapes, arrow, turn - Math.PI));
-                }
-                else if (turn > 0 && turn < Math.PI / 2)
-                {
-                    return (CompareShapes(shapes, arrow, turn));
-                }
-                else if (turn > Math.PI && turn < 3 * Math.PI / 2)
-                {
-                    return (CompareShapes(shapes, arrow, turn));
-                }
-                else
-                {
-                    return (CompareShapes(shapes, arrow, turn + Math.PI));
+                    return true;
                 }
             }
             return false;
         },
-        OnMouseClick: function()
+        HandlerPipes: function()
         {
-            if (!this.CheckColors())
+            birdPos = this._model.GetBirdPosition();
+            birdSize = this._model.GetBirdSize();
+            for (var i = 0; i < this._model.GetPipeArrayLength(); ++i)
             {
-                alert("FAILED!");
-                this._model.ResetData();
-            }
-            else
-            {
-                this._model.IncrementScore();
-                if (this._model.GetScore() > this._model.GetTop())
+                if (this._model.GetPipePosition(i)[0]._x < 0)
                 {
-                    window.localStorage.setItem(config._TOP_RESULT, this._model.GetScore());
-                    this._model.SetTop(this._model.GetScore());
+                    this._model.DeletePipe(i);
+                    this._model.AddPipe();
                 }
-                if (this._model.GetScore() % config._POINTS_FOR_SPEED == 0)
+                if (this.CheckCollision(birdPos, birdSize, this._model.GetPipePosition(i)[0], this._model.GetPipeSize(i)[0]) ||
+                    this.CheckCollision(birdPos, birdSize, this._model.GetPipePosition(i)[1], this._model.GetPipeSize(i)[1]))
                 {
-                    this._model.IncrementSpeed();
-                    this._model.IncrementSectors();
+                    alert("GAME_OVER");
+                    this._model.ResetData();
                 }
-                var randNumber = this._model.GetRandomArbitary(0, this._model.GetNumberOfColors() - 1);
-                while (this._model.GetArrow().GetColor() == this._model.GetColors()[randNumber])
-                {
-                    randNumber = this._model.GetRandomArbitary(0, this._model.GetNumberOfColors() - 1);
-                }
-                this._model.SetColorArrow(this._model.GetColors()[randNumber]);
-                this._model._twist = !this._model._twist;
             }
         }
+
     });
 });

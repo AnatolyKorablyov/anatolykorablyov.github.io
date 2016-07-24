@@ -2562,17 +2562,19 @@ goog.UNSEALABLE_CONSTRUCTOR_PROPERTY_ = 'goog_defineClass_legacy_unsealable';
 
 // Please do not edit.
 
-goog.addDependency('src/ispring/sample/CMyGame.js', ['ispring.sample.CMyGame'], ['ispring.sample.CShape'], false);
-
-goog.addDependency('src/ispring/sample/CShape.js', ['ispring.sample.CShape'], [], false);
+goog.addDependency('src/ispring/sample/Bird.js', ['ispring.sample.Bird'], ['ispring.sample.Definition'], false);
 
 goog.addDependency('src/ispring/sample/Definition.js', ['ispring.sample.Definition'], [], false);
 
 goog.addDependency('src/ispring/sample/GameController.js', ['ispring.sample.GameController'], ['ispring.sample.GameModel', 'ispring.sample.GameView'], false);
 
-goog.addDependency('src/ispring/sample/GameModel.js', ['ispring.sample.GameModel'], ['ispring.sample.CShape', 'ispring.sample.Definition'], false);
+goog.addDependency('src/ispring/sample/GameModel.js', ['ispring.sample.GameModel'], ['ispring.sample.Bird', 'ispring.sample.Definition', 'ispring.sample.Pipe'], false);
 
-goog.addDependency('src/ispring/sample/GameView.js', ['ispring.sample.GameView'], ['ispring.sample.CShape', 'ispring.sample.Definition'], false);
+goog.addDependency('src/ispring/sample/GameView.js', ['ispring.sample.GameView'], ['ispring.sample.Definition'], false);
+
+goog.addDependency('src/ispring/sample/Pipe.js', ['ispring.sample.Pipe'], ['ispring.sample.Definition'], false);
+
+goog.addDependency('src/ispring/sample/myTimer.js', ['sample.MyTimer'], ['goog.Timer'], false);
 
 goog.addDependency('main.js', ['Sample', '__tmp.Module0'], ['ispring.sample.GameController'], false);
 

@@ -1,7 +1,6 @@
 goog.provide("ispring.sample.GameView");
 
 goog.require("ispring.sample.Definition");
-goog.require("ispring.sample.CShape");
 
 goog.scope(function() {
     const GAME_CONFIG = ispring.sample.Definition;
@@ -22,18 +21,15 @@ goog.scope(function() {
             this._topResultNode = document.getElementById("topResult");
 
         },
-        DrawShapes: function(shapes)
-        {
-            this._context.clearRect(0, 0, this._canvasSize.width, this._canvasSize.height);
-            for (var i = 0; i < shapes.length; ++i)
+            ClearCanvas: function()
             {
-                this._context.save();
-                this._context.translate(shapes[i].GetPosition().X, shapes[i].GetPosition().Y);
-                this._context.rotate(shapes[i].GetRotation());
-                this._context.fillStyle = shapes[i].GetColor();
-                this._context.fill(shapes[i].GetPath());
-                this._context.restore();
-            }
+                this._context.clearRect(0, 0, this._canvasSize.width, this._canvasSize.height);
+            },
+        DrawShapes: function(shape, position, size)
+        {
+            this._context.save();
+            this._context.drawImage(shape, position._x, position._y, size._height, size._width);
+            this._context.restore();
         },
         DrawText: function(score, speed, record)
         {
